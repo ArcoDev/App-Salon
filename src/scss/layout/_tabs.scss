@@ -9,6 +9,10 @@
         text-transform: uppercase;
         border: none;
         transition: all .5s;
+        &.actual {
+            background-color: $azul;
+            color: $blanco;
+        }
         &:hover {
             cursor: pointer;
         }

@@ -1,9 +1,18 @@
+//variable global 
+let pagina = 1;
+
 document.addEventListener('DOMContentLoaded', function () {
     iniciarApp();
 });
 
 function iniciarApp() {
     mostrarServicios();
+
+    //Resalta el div actual segun el tab al que se presiona
+    mostrarSeccion();
+
+    //Oculta o mustra seccion segun el tab al que se presiona
+    cambiarSeccion();
 }
 async function mostrarServicios() {
     try {
@@ -38,8 +47,8 @@ async function mostrarServicios() {
             const servicioDIV = document.createElement('DIV');
             servicioDIV.classList.add('servicio');
             servicioDIV.dataset.idServicio = id;
-            
-            
+
+
             //Seleccionar un servicio para la cita y marcarlo con event handler
             servicioDIV.onclick = seleccionarServicio;
 
@@ -49,25 +58,58 @@ async function mostrarServicios() {
 
             //Inyectar en el HTML los servicios 
             document.querySelector('#servicios').appendChild(servicioDIV);
-            
+
         });
     } catch (error) {
         console.log(error);
     }
 }
+
 function seleccionarServicio(e) {
     let elemento;
     //Forzar que el elemento al cual le damos click sea el div
-    if(e.target.tagName === 'P') {
+    if (e.target.tagName === 'P') {
         elemento = e.target.parentElement;
     } else {
         elemento = e.target;
     }
     //console.log(elemento.dataset.idServicio);
-    if(elemento.classList.contains('seleccionado')) {
+    if (elemento.classList.contains('seleccionado')) {
         elemento.classList.remove('seleccionado');
     } else {
         elemento.classList.add('seleccionado');
     }
     //elemento.classList.toggle('seleccionado');
+}
+
+function mostrarSeccion() {
+    const seccionActual = document.querySelector(`#paso-${pagina}`);
+    seccionActual.classList.add('mostrar-seccion');
+    //Resalta el tab actual 
+    const tab = document.querySelector(`[data-paso="${pagina}"]`);
+    tab.classList.add('actual');
+}
+
+function cambiarSeccion() {
+    const enlaces = document.querySelectorAll('.tabs button');
+    enlaces.forEach(enlace => {
+        enlace.addEventListener('click', e => {
+            e.preventDefault();
+            pagina = parseInt(e.target.dataset.paso);
+
+            //ELiminar mostrar seccion de la seccion anterior
+            document.querySelector('.mostrar-seccion').classList.remove('mostrar-seccion');
+
+            //Agrega mostrar-seccion donde dimos clic
+            const seccion = document.querySelector(`#paso-${pagina}`);
+            seccion.classList.add('mostrar-seccion');
+
+            //Eliminar la clase de actual en el tab anterior
+            document.querySelector('.tabs .actual').classList.remove('actual');
+
+            //Agregar la clase actual en el tab seleccionado
+            const tabActual = document.querySelector(`[data-paso="${pagina}"]`);
+            tabActual.classList.add('actual');
+        });
+    });
 }
