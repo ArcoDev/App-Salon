@@ -13,6 +13,14 @@ function iniciarApp() {
 
     //Oculta o mustra seccion segun el tab al que se presiona
     cambiarSeccion();
+
+    //Paginacion siguiente y anterior
+    paginaSiguiente();
+    paginaAnterior();
+
+    //Comprobar la pagina actual para ocultar o mostrar la paginacion
+    botonesPaginador();
+
 }
 async function mostrarServicios() {
     try {
@@ -112,4 +120,36 @@ function cambiarSeccion() {
             tabActual.classList.add('actual');
         });
     });
+}
+
+function paginaSiguiente() {
+    const paginaSiguiente = document.querySelector('#siguiente');
+    paginaSiguiente.addEventListener('click', () => {
+        pagina++;
+        console.log(pagina);
+        botonesPaginador();
+    });
+}
+
+function paginaAnterior() {
+    const paginaAnterior = document.querySelector('#anterior');
+    paginaAnterior.addEventListener('click', () => {
+        pagina--;
+        console.log(pagina);
+    });
+}
+
+function botonesPaginador() {
+    const paginaSiguiente = document.querySelector('#siguiente');
+    const paginaAnterior = document.querySelector('#anterior');
+
+    if (pagina === 1) {
+        paginaAnterior.classList.add('ocultar');
+        paginaSiguiente.classList.remove('ocultar');
+    } else if (pagina === 2) {
+        paginaAnterior.classList.remove('ocultar');
+        paginaSiguiente.classList.remove('ocultar');
+    } else if (pagina === 3) {
+        paginaSiguiente.classList.add('ocultar');
+    }
 }
