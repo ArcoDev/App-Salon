@@ -1,0 +1,22 @@
+.formulario {
+    width: 100%;
+}
+
+.campo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+
+    label {
+        //Flex se utiliza como el factor de crecimiento, es decir que se la da una cantidad de pixeles del elemento padre, a los hijos dpendiendo de la cantidad que le demos
+        flex: 0 0 10rem;
+        color: $blanco;
+    }
+
+    input {
+        flex: 1;
+        padding: $separacion / 4;
+        border-radius: 1rem;
+        border: none;
+    }
+}
