@@ -29,6 +29,9 @@ function iniciarApp() {
     //Muestra el resumen de la cita o el mensaje de error en caso de que no pase la validacion
     mostrarResumen();
 
+    //Almacena el nombre de la ciat del objeto
+    nombreCita();
+
 }
 async function mostrarServicios() {
     try {
@@ -89,8 +92,8 @@ function seleccionarServicio(e) {
     } else {
         elemento = e.target;
     }
-    
-    
+
+
     if (elemento.classList.contains('seleccionado')) {
         elemento.classList.remove('seleccionado');
         const id = parseInt(elemento.dataset.idServicio);
@@ -98,7 +101,7 @@ function seleccionarServicio(e) {
     } else {
         elemento.classList.add('seleccionado');
         //travesint del dom (recorrer el dom)
-        const servicioObj =  {
+        const servicioObj = {
             id: parseInt(elemento.dataset.idServicio),
             nombre: elemento.firstElementChild.textContent,
             precio: elemento.firstElementChild.nextElementSibling.textContent
@@ -107,18 +110,25 @@ function seleccionarServicio(e) {
         agregarServicio(servicioObj);
     }
 }
+
 function eliminarServicio(id) {
-    const { servicios } = cita;
-    cita.servicios = servicios.filter( servicio => servicio.id !== id);
+    const {
+        servicios
+    } = cita;
+    cita.servicios = servicios.filter(servicio => servicio.id !== id);
     console.log(cita);
 }
+
 function agregarServicio(servicioObj) {
-    const { servicios } = cita;
+    const {
+        servicios
+    } = cita;
     //con los 3 puntos, copiamos el arreglo y le pasamos la informacion al nuevo objeto
     cita.servicios = [...servicios, servicioObj];
     console.log(cita);
 
 }
+
 function mostrarSeccion() {
 
     //ELiminar mostrar-seccion, de la seccion anterior
@@ -174,7 +184,7 @@ function botonesPaginador() {
     const paginaSiguiente = document.querySelector('#siguiente');
     const paginaAnterior = document.querySelector('#anterior');
 
-    if(pagina == 1) {
+    if (pagina == 1) {
         paginaAnterior.classList.add('ocultar');
         paginaSiguiente.classList.remove('ocultar');
     } else if (pagina == 3) {
@@ -187,15 +197,21 @@ function botonesPaginador() {
 
     mostrarSeccion(); //Cambia la seccion que se muestra, por la de la pagina actual
 }
+
 function mostrarResumen() {
-    
+
     //Destructirung extarer la informacion del objeto
-    const { nombre, fecha, hora, servicios } = cita;
-    
+    const {
+        nombre,
+        fecha,
+        hora,
+        servicios
+    } = cita;
+
     //Seleccionar el resumen
     const resumenDiv = document.querySelector('.contenido-resumen');
     //validacion para saber si el objeto esta vacio, extraer los valores del objeto
-    if(Object.values(cita).includes('')) {
+    if (Object.values(cita).includes('')) {
         const noServicios = document.createElement('P');
         noServicios.textContent = 'Faltan datos de servicios, hora, fecha o nombre';
         noServicios.classList.add('invalidar-cita');
@@ -203,5 +219,45 @@ function mostrarResumen() {
         //Agregar a resuemn div
         resumenDiv.appendChild(noServicios);
     }
+}
 
+function nombreCita() {
+    const nombreInput = document.querySelector('#nombre');
+    nombreInput.addEventListener('input', evento => {
+        //trim elimina los espacios en blanco de inicio y final
+        const nombreTexto = evento.target.value.trim();
+        //validacion de que el nombre no este validacion
+        if (nombreTexto === '' || nombreTexto.length < 3) {
+            mostrarAlerta('No valido', 'error');
+        } else {
+            const alerta = document.querySelector('.alerta');
+            if(alerta) {
+                alerta.remove();
+            }
+            cita.nombre = nombreTexto;
+        }
+    });
+}
+function mostrarAlerta(mensaje, tipo) {
+    //Si hay una alerta previa, no crear mas alertas
+    const alertaPrevia = document.querySelector('.alerta');
+    if(alertaPrevia) {
+        return;
+    }
+    //Creacion del div con sus clases y mensjae de error
+    const alerta = document.createElement('DIV');
+    alerta.textContent = mensaje;
+    alerta.classList.add('alerta');
+    if(tipo === 'error') {
+        alerta.classList.add('error');
+    } 
+    
+    //Insertar en el formulario el div con la alerta 
+    const formulario = document.querySelector('.formulario');
+    formulario.appendChild(alerta);
+
+    //Eliminar la alerta despues de 3 segundos
+    setTimeout(() => {
+        alerta.remove();
+    }, 3000);
 }
