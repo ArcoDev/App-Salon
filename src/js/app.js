@@ -1,6 +1,11 @@
-//variable global 
+//variables globales 
 let pagina = 1;
-
+const cita = {
+    nombre: '',
+    fecha: '',
+    hora: '',
+    servicios: []
+}
 document.addEventListener('DOMContentLoaded', function () {
     iniciarApp();
 });
@@ -20,6 +25,9 @@ function iniciarApp() {
 
     //Comprobar la pagina actual para ocultar o mostrar la paginacion
     botonesPaginador();
+
+    //Muestra el resumen de la cita o el mensaje de error en caso de que no pase la validacion
+    mostrarResumen();
 
 }
 async function mostrarServicios() {
@@ -157,4 +165,22 @@ function botonesPaginador() {
     }
 
     mostrarSeccion(); //Cambia la seccion que se muestra, por la de la pagina actual
+}
+function mostrarResumen() {
+    
+    //Destructirung extarer la informacion del objeto
+    const { nombre, fecha, hora, servicios } = cita;
+    
+    //Seleccionar el resumen
+    const resumenDiv = document.querySelector('.contenido-resumen');
+    //validacion para saber si el objeto esta vacio, extraer los valores del objeto
+    if(Object.values(cita).includes('')) {
+        const noServicios = document.createElement('P');
+        noServicios.textContent = 'Faltan datos de servicios, hora, fecha o nombre';
+        noServicios.classList.add('invalidar-cita');
+
+        //Agregar a resuemn div
+        resumenDiv.appendChild(noServicios);
+    }
+
 }
