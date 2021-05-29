@@ -89,15 +89,36 @@ function seleccionarServicio(e) {
     } else {
         elemento = e.target;
     }
-    //console.log(elemento.dataset.idServicio);
+    
+    
     if (elemento.classList.contains('seleccionado')) {
         elemento.classList.remove('seleccionado');
+        const id = parseInt(elemento.dataset.idServicio);
+        eliminarServicio(id);
     } else {
         elemento.classList.add('seleccionado');
+        //travesint del dom (recorrer el dom)
+        const servicioObj =  {
+            id: parseInt(elemento.dataset.idServicio),
+            nombre: elemento.firstElementChild.textContent,
+            precio: elemento.firstElementChild.nextElementSibling.textContent
+        }
+        //console.log(servicioObj);
+        agregarServicio(servicioObj);
     }
-    //elemento.classList.toggle('seleccionado');
 }
+function eliminarServicio(id) {
+    const { servicios } = cita;
+    cita.servicios = servicios.filter( servicio => servicio.id !== id);
+    console.log(cita);
+}
+function agregarServicio(servicioObj) {
+    const { servicios } = cita;
+    //con los 3 puntos, copiamos el arreglo y le pasamos la informacion al nuevo objeto
+    cita.servicios = [...servicios, servicioObj];
+    console.log(cita);
 
+}
 function mostrarSeccion() {
 
     //ELiminar mostrar-seccion, de la seccion anterior
