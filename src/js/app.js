@@ -91,8 +91,22 @@ function seleccionarServicio(e) {
 }
 
 function mostrarSeccion() {
+
+    //ELiminar mostrar-seccion, de la seccion anterior
+    const seccionAnterior = document.querySelector('.mostrar-seccion');
+    if (seccionAnterior) {
+        seccionAnterior.classList.remove('mostrar-seccion');
+    }
+    //Seccion actual en la aplicacion
     const seccionActual = document.querySelector(`#paso-${pagina}`);
     seccionActual.classList.add('mostrar-seccion');
+
+    //Eliminar la clase de actual en el tab anterior
+    const tabAnterior = document.querySelector('.tabs .actual');
+    if (tabAnterior) {
+        tabAnterior.classList.remove('actual');
+    }
+
     //Resalta el tab actual 
     const tab = document.querySelector(`[data-paso="${pagina}"]`);
     tab.classList.add('actual');
@@ -104,20 +118,8 @@ function cambiarSeccion() {
         enlace.addEventListener('click', e => {
             e.preventDefault();
             pagina = parseInt(e.target.dataset.paso);
-
-            //ELiminar mostrar seccion de la seccion anterior
-            document.querySelector('.mostrar-seccion').classList.remove('mostrar-seccion');
-
-            //Agrega mostrar-seccion donde dimos clic
-            const seccion = document.querySelector(`#paso-${pagina}`);
-            seccion.classList.add('mostrar-seccion');
-
-            //Eliminar la clase de actual en el tab anterior
-            document.querySelector('.tabs .actual').classList.remove('actual');
-
-            //Agregar la clase actual en el tab seleccionado
-            const tabActual = document.querySelector(`[data-paso="${pagina}"]`);
-            tabActual.classList.add('actual');
+            mostrarSeccion();
+            botonesPaginador();
         });
     });
 }
@@ -126,7 +128,6 @@ function paginaSiguiente() {
     const paginaSiguiente = document.querySelector('#siguiente');
     paginaSiguiente.addEventListener('click', () => {
         pagina++;
-        console.log(pagina);
         botonesPaginador();
     });
 }
@@ -135,7 +136,8 @@ function paginaAnterior() {
     const paginaAnterior = document.querySelector('#anterior');
     paginaAnterior.addEventListener('click', () => {
         pagina--;
-        console.log(pagina);
+        botonesPaginador();
+
     });
 }
 
@@ -143,13 +145,16 @@ function botonesPaginador() {
     const paginaSiguiente = document.querySelector('#siguiente');
     const paginaAnterior = document.querySelector('#anterior');
 
-    if (pagina === 1) {
+    if(pagina == 1) {
         paginaAnterior.classList.add('ocultar');
         paginaSiguiente.classList.remove('ocultar');
-    } else if (pagina === 2) {
+    } else if (pagina == 3) {
+        paginaSiguiente.classList.add('ocultar');
+        paginaAnterior.classList.remove('ocultar');
+    } else {
         paginaAnterior.classList.remove('ocultar');
         paginaSiguiente.classList.remove('ocultar');
-    } else if (pagina === 3) {
-        paginaSiguiente.classList.add('ocultar');
     }
+
+    mostrarSeccion(); //Cambia la seccion que se muestra, por la de la pagina actual
 }
