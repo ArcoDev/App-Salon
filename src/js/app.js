@@ -32,6 +32,15 @@ function iniciarApp() {
     //Almacena el nombre de la ciat del objeto
     nombreCita();
 
+    //Almacena el nombre de la ciat del objeto
+    fechaCita();
+
+    // Almacena la hora de la cita en el objeto
+    horaCita();
+
+    //Deshabilita dias pasados en el calendario
+    deshabilitarFechaAnterior();
+
 }
 async function mostrarServicios() {
     try {
@@ -190,6 +199,7 @@ function botonesPaginador() {
     } else if (pagina == 3) {
         paginaSiguiente.classList.add('ocultar');
         paginaAnterior.classList.remove('ocultar');
+        mostrarResumen(); //Se mostrar resumen con los datos almacenados en el objeto cita
     } else {
         paginaAnterior.classList.remove('ocultar');
         paginaSiguiente.classList.remove('ocultar');
@@ -210,14 +220,77 @@ function mostrarResumen() {
 
     //Seleccionar el resumen
     const resumenDiv = document.querySelector('.contenido-resumen');
+
+    //Limpia el html previo
+    while (resumenDiv.firstChild) {
+        resumenDiv.removeChild(resumenDiv.firstChild);
+    }
+
     //validacion para saber si el objeto esta vacio, extraer los valores del objeto
     if (Object.values(cita).includes('')) {
         const noServicios = document.createElement('P');
         noServicios.textContent = 'Faltan datos de servicios, hora, fecha o nombre';
         noServicios.classList.add('invalidar-cita');
 
-        //Agregar a resuemn div
+        //Agregar a resumen div
         resumenDiv.appendChild(noServicios);
+    } else {
+        //Mostrar en el html los datos guardados en el onjeto cita
+        const nombreCita = document.createElement('P');
+        nombreCita.innerHTML = `<span>Nombre: </span>${nombre}`;
+        const fechaCita = document.createElement('P');
+        fechaCita.innerHTML = `<span>Fecha: </span>${fecha}`;
+        const horaCita = document.createElement('P');
+        horaCita.innerHTML = `<span>Hora: </span>${hora}`;
+        
+        const headingCita = document.createElement('H3');
+        headingCita.textContent = 'Resumen de Cita';
+
+        const serviciosCita = document.createElement('DIV');
+        serviciosCita.classList.add('resumen-servicios');
+
+        const headingServicios = document.createElement('H3');
+        headingServicios.textContent = 'Resumen de servicios';
+
+        serviciosCita.appendChild(headingServicios);
+
+        let cantidad = 0;
+
+        //Iterar sobre al arreglo de servicios
+        servicios.forEach(servicio => {
+            const {nombre, precio} = servicio
+            
+            const contenedorServicio = document.createElement('DIV');
+            contenedorServicio.classList.add('contenedor-servicio');
+            
+            const textoServicio = document.createElement('P');
+            textoServicio.textContent = nombre;
+            
+            const precioServicio = document.createElement('P');
+            precioServicio.textContent = precio;
+            precioServicio.classList.add('precio-servicio');
+            
+            //separar el signo de pesos y convertir el string a numerico
+            const totalServicio = precio.split('$');
+            cantidad += parseInt(totalServicio[1].trim());
+
+            //colocar nombre y precio en el div
+            contenedorServicio.appendChild(textoServicio);
+            contenedorServicio.appendChild(precioServicio);
+            serviciosCita.appendChild(contenedorServicio);
+        });
+
+        resumenDiv.appendChild(headingCita);
+        resumenDiv.appendChild(nombreCita);
+        resumenDiv.appendChild(fechaCita);
+        resumenDiv.appendChild(horaCita);
+        resumenDiv.appendChild(serviciosCita);
+
+        const cantidadPagar = document.createElement('P');
+        cantidadPagar.classList.add('total');
+        cantidadPagar.innerHTML = `<span>Total a pagar: </span>$ ${cantidad}`;
+        
+        resumenDiv.appendChild(cantidadPagar);
     }
 }
 
@@ -231,27 +304,28 @@ function nombreCita() {
             mostrarAlerta('No valido', 'error');
         } else {
             const alerta = document.querySelector('.alerta');
-            if(alerta) {
+            if (alerta) {
                 alerta.remove();
             }
             cita.nombre = nombreTexto;
         }
     });
 }
+
 function mostrarAlerta(mensaje, tipo) {
     //Si hay una alerta previa, no crear mas alertas
     const alertaPrevia = document.querySelector('.alerta');
-    if(alertaPrevia) {
+    if (alertaPrevia) {
         return;
     }
     //Creacion del div con sus clases y mensjae de error
     const alerta = document.createElement('DIV');
     alerta.textContent = mensaje;
     alerta.classList.add('alerta');
-    if(tipo === 'error') {
+    if (tipo === 'error') {
         alerta.classList.add('error');
-    } 
-    
+    }
+
     //Insertar en el formulario el div con la alerta 
     const formulario = document.querySelector('.formulario');
     formulario.appendChild(alerta);
@@ -260,4 +334,77 @@ function mostrarAlerta(mensaje, tipo) {
     setTimeout(() => {
         alerta.remove();
     }, 3000);
+}
+
+function fechaCita() {
+    const fechaInput = document.querySelector('#fecha');
+    fechaInput.addEventListener('input', e => {
+        const dia = new Date(e.target.value).getUTCDay();
+
+        if ([0].includes(dia)) {
+            e.preventDefault();
+            fechaInput.value = '';
+            mostrarAlerta('Domingo no se trabaja', 'error');
+        } else {
+            cita.fecha = fechaInput.value;
+        }
+
+        /* Con esta opcion, nos permite traducir el nombre de la fecha en español
+        const opciones = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long'
+        }
+        console.log(dia.toLocaleDateString('es-ES', opciones));*/
+    });
+}
+
+function deshabilitarFechaAnterior() {
+    const inputFecha = document.querySelector('#fecha');
+
+
+    fechaAhora = new Date();
+    const year = fechaAhora.getFullYear();
+    let mes = fechaAhora.getMonth() + 1;
+    let dia = fechaAhora.getDate() + 1;
+
+    //formato deseado 2021-02-22 (AAAA-MM-DD)
+    let fechaDehabilitar = `${year}-${mes}-${dia}`;
+
+    if (mes < 10) {
+
+        fechaDehabilitar = `${year}-0${mes}-${dia}`;
+    }
+    if (dia < 10) {
+
+        fechaDehabilitar = `${year}-${mes}-0${dia}`;
+    }
+
+    inputFecha.min = fechaDehabilitar;
+
+}
+
+function horaCita() {
+    // Recuperamos la Hora
+    const inputHora = document.querySelector('#hora');
+
+    // Escuchamos cuando se modifica la hora
+    inputHora.addEventListener('input', e => {
+
+        const horaCita = e.target.value;
+        // Creamos un Array hora[0]= Hora, hora[1] = Minutos
+        const hora = horaCita.split(':');
+
+        // Validación, solo se permiten citas entre las 10h y las 18h
+        if (hora[0] < 10 || hora[0] > 18) {
+            mostrarAlerta('Hora no válida', 'error');
+            setTimeout(() => {
+                inputHora.value = '';
+            }, 3000);
+        } else {
+            // Guardamos la Hora en el objeto Cita
+            cita.hora = horaCita;
+            console.log(cita);
+        }
+    });
 }
